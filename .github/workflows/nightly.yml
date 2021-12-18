@@ -63,11 +63,16 @@ jobs:
       - name: Set date variable
         run: echo "DATE=$(echo $(date +%Y-%m-%d))" >> $GITHUB_ENV
 
-      - name: release debug to kiwix.download.org
+      - name: Create release
+        uses: Roang-zero1/github-create-release-action@master
         env:
-          UNIVERSAL_DEBUG_APK: app/build/outputs/apk/debug/*universal*.apk
-        run: |
-          mkdir $DATE
-          cp $UNIVERSAL_DEBUG_APK $DATE
-          scp -vrp -i ssh_key -o StrictHostKeyChecking=no $DATE ci@download.kiwix.org:/data/download/nightly/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub release
+        uses: Roang-zero1/github-upload-release-artifacts-action@master
+        with:
+          args: app/build/outputs/apk/debug/*universal*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
